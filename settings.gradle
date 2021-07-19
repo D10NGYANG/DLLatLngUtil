@@ -1,0 +1,3 @@
+rootProject.name = "DLLatLngUtil"
+include ':app'
+include ':LatLnglib'
