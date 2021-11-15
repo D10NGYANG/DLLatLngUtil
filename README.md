@@ -15,7 +15,7 @@ allprojects {
 ```gradle
 dependencies {
     // 经纬度工具
-    implementation 'com.github.D10NGYANG:DLLatLngUtil:1.1'
+    implementation 'com.github.D10NGYANG:DLLatLngUtil:1.2'
 }
 ```
 3 混淆
@@ -179,4 +179,12 @@ fun String.toLatitude(pattern: String): Double
  * @return [Double] eg: 113.03131
  */
 fun Double.ddmmpmmmm2LatOrLng(): Double
+
+/**
+ * 将真正的经纬度转换成 ddmm.mmmm格式的经纬度
+ * - 北斗2.0协议里专用转换
+ * @receiver [Double] eg: 113.03131
+ * @return [Double] eg: 11301.8789
+ */
+fun Double.latLng2ddmmpmmmm(): Double
 ```

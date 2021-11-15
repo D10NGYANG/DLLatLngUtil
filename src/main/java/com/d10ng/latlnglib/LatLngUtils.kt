@@ -479,14 +479,28 @@ fun Double.ddmmpmmmm2LatOrLng(): Double {
     return zheng + end
 }
 
+/**
+ * 将真正的经纬度转换成 ddmm.mmmm格式的经纬度
+ * - 北斗2.0协议里专用转换
+ * @receiver [Double] eg: 113.03131
+ * @return [Double] eg: 11301.8789
+ */
+fun Double.latLng2ddmmpmmmm(): Double {
+    val zheng = this.toInt()
+    val end = (this - zheng) * 60.0 / 100.0
+    return (zheng + end) * 100
+}
+
+/*
 fun main() {
     val pattern = "CH Fd°m′S.ss″ "
     val string = 103.5863933.toLongitudeString(pattern)
     println(string)
     println(string.toLatOrLng(pattern))
     println(29.73784595.toLatitudeString(pattern))
+    println(113.03131.latLng2ddmmpmmmm())
 
     // 经纬度的坐标系转换
     println(DLatLng(29.7378, 103.5863).convert(CoordinateSystemType.WGS84, CoordinateSystemType.GCJ02))
     // DLatLng(latitude=29.734910753953383, longitude=103.58825934357566)
-}
+}*/
