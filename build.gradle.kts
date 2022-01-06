@@ -1,10 +1,9 @@
 plugins {
     kotlin("jvm") version "1.5.31"
-    id("maven")
     id("maven-publish")
 }
 
-group = "com.d10ng"
+group = "com.github.D10NGYANG"
 
 repositories {
     mavenCentral()
@@ -20,4 +19,12 @@ kotlin {
 
 dependencies {
     implementation(kotlin("stdlib"))
+}
+
+publishing {
+    publications {
+        create("release", MavenPublication::class) {
+            from(components.getByName("java"))
+        }
+    }
 }
