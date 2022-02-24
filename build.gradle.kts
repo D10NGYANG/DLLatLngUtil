@@ -1,9 +1,10 @@
 plugins {
-    kotlin("jvm") version "1.5.31"
+    kotlin("multiplatform") version "1.6.10"
     id("maven-publish")
 }
 
 group = "com.github.D10NGYANG"
+version = "1.3"
 
 repositories {
     mavenCentral()
@@ -11,20 +12,28 @@ repositories {
 }
 
 kotlin {
-    java {
-        targetCompatibility = JavaVersion.VERSION_1_8
-        sourceCompatibility = JavaVersion.VERSION_1_8
+    jvm {
+        compilations.all {
+            kotlinOptions.jvmTarget = "1.8"
+        }
     }
-}
-
-dependencies {
-    implementation(kotlin("stdlib"))
-}
-
-publishing {
-    publications {
-        create("release", MavenPublication::class) {
-            from(components.getByName("java"))
+    /*js(LEGACY) {
+        browser {
+            commonWebpackConfig {
+                cssSupport.enabled = true
+            }
+        }
+    }*/
+    sourceSets {
+        val commonMain by getting {
+            dependencies {
+                implementation(kotlin("stdlib"))
+            }
+        }
+        val commonTest by getting {
+            dependencies {
+                implementation(kotlin("test"))
+            }
         }
     }
 }

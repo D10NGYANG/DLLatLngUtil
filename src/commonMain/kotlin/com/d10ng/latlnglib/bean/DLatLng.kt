@@ -1,7 +1,5 @@
 package com.d10ng.latlnglib.bean
 
-import java.io.Serializable
-
 /**
  * 经纬度
  *
@@ -19,4 +17,4 @@ data class DLatLng(
      * 经度
      */
     var longitude: Double = 0.0,
-): Serializable
+)
