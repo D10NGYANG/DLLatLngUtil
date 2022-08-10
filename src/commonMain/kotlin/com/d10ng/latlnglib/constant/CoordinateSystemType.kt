@@ -1,4 +1,9 @@
+@file:OptIn(ExperimentalJsExport::class)
+@file:JsExport
 package com.d10ng.latlnglib.constant
+
+import kotlin.js.ExperimentalJsExport
+import kotlin.js.JsExport
 
 /**
  * 坐标系类型
@@ -6,6 +11,7 @@ package com.d10ng.latlnglib.constant
  * @Author: D10NG
  * @Time: 2021/6/18 5:51 下午
  */
+@JsExport
 enum class CoordinateSystemType {
 
     /**

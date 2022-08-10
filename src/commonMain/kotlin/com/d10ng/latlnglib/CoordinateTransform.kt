@@ -1,5 +1,9 @@
+@file:OptIn(ExperimentalJsExport::class)
+@file:JsExport
 package com.d10ng.latlnglib
 
+import kotlin.js.ExperimentalJsExport
+import kotlin.js.JsExport
 import kotlin.math.*
 
 /**

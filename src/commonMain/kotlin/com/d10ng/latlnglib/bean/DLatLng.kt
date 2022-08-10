@@ -1,4 +1,9 @@
+@file:OptIn(ExperimentalJsExport::class)
+@file:JsExport
 package com.d10ng.latlnglib.bean
+
+import kotlin.js.ExperimentalJsExport
+import kotlin.js.JsExport
 
 /**
  * 经纬度
@@ -6,6 +11,7 @@ package com.d10ng.latlnglib.bean
  * @Author: D10NG
  * @Time: 2021/6/18 5:56 下午
  */
+@JsExport
 data class DLatLng(
 
     /**

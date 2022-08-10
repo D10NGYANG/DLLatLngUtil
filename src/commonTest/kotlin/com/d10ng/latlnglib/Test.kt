@@ -16,6 +16,9 @@ class Test {
         println(29.73784595.toLatitudeString(pattern))
         println(113.03131.latLng2ddmmpmmmm())
 
+        val str1 = "E118°22′26.3″"
+        println(str1.toLatOrLng("Fd°m′S.s″"))
+
         // 经纬度的坐标系转换
         val gcj02 = DLatLng(29.7378, 103.5863).convert(CoordinateSystemType.WGS84, CoordinateSystemType.GCJ02)
         println(gcj02)

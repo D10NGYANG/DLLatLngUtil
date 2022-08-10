@@ -1,5 +1,5 @@
 plugins {
-    kotlin("multiplatform") version "1.6.10"
+    kotlin("multiplatform") version "1.7.0"
     id("maven-publish")
 }
 
@@ -17,13 +17,10 @@ kotlin {
             kotlinOptions.jvmTarget = "1.8"
         }
     }
-    /*js(LEGACY) {
-        browser {
-            commonWebpackConfig {
-                cssSupport.enabled = true
-            }
-        }
-    }*/
+    js {
+        browser {}
+        binaries.executable()
+    }
     sourceSets {
         val commonMain by getting {
             dependencies {
