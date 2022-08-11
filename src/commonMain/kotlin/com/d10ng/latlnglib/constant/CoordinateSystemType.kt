@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalJsExport::class)
-@file:JsExport
 package com.d10ng.latlnglib.constant
 
 import kotlin.js.ExperimentalJsExport
@@ -11,6 +9,7 @@ import kotlin.js.JsExport
  * @Author: D10NG
  * @Time: 2021/6/18 5:51 下午
  */
+@OptIn(ExperimentalJsExport::class)
 @JsExport
 enum class CoordinateSystemType {
 

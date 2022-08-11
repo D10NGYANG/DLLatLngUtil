@@ -21,6 +21,11 @@ kotlin {
         browser {}
         binaries.executable()
     }
+    ios {
+        binaries {
+            framework {}
+        }
+    }
     sourceSets {
         val commonMain by getting {
             dependencies {
