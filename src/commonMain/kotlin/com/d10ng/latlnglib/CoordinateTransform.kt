@@ -13,9 +13,8 @@ import kotlin.math.*
 @OptIn(ExperimentalJsExport::class)
 @JsExport
 object CoordinateTransform {
-    private const val x_PI = 3.141592653589793 * 3000.0 / 180.0
-    private const val PI = 3.141592653589793
-    private const val a = 6378245.0
+    private const val x_PI = PI * 3000 / 180
+    private const val a = 6378245
     private const val ee = 0.006693421622965943
 
     /**

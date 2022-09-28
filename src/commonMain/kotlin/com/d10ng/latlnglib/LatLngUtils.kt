@@ -2,6 +2,7 @@
 @file:JsExport
 package com.d10ng.latlnglib
 
+import com.d10ng.latlnglib.bean.DMS
 import kotlin.js.ExperimentalJsExport
 import kotlin.js.JsExport
 import kotlin.math.pow
@@ -198,6 +199,30 @@ fun Double.longlatitude2dfm(): String = this.toLatLngString(true, "d°m′S.ss�
     replaceWith = ReplaceWith("this.toLatOrLng(\"d°m′S.ss″\")"),
 )
 fun String.dfm2longlatitude(): Double = this.toLatOrLng("d°m′S.ss″")
+
+/**
+ * 将经纬度数据转换成度分秒值
+ * @receiver Double
+ * @param isLongitude Boolean
+ * @return DMS
+ */
+fun Double.toDMS(isLongitude: Boolean): DMS {
+    val value = if (isLongitude) toLongitudeNoPre() else toLatitudeNoPre()
+    val dValue = value.toInt()
+    val m = (value - dValue) * 60.0
+    val mValue = m.toInt()
+    val s = (m - mValue) * 60.0
+    return DMS(dValue, mValue, s.toFloat())
+}
+
+/**
+ * 将度分秒值转换成经纬度数据
+ * @receiver DMS
+ * @return Double
+ */
+fun DMS.toLatLng(): Double {
+    return (this.seconds / 60 + this.minutes) / 60.0 + this.degrees
+}
 
 /**
  * 将经纬度转经纬度字符串

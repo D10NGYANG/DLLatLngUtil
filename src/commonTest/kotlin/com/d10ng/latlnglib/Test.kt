@@ -46,19 +46,38 @@ class Test {
     }
 
     @Test
-    fun testKeepDecimal() {
-        // [734],35.97248,35.97247,35.97248
-        // [45],8.13872,8.13871,8.13872
-        // [318]77.35067,77.35066,77.35067
-        for (i in 0 .. 1000) {
-            val num = (0 .. 89).random() + (1000000 .. 9999999).random() * 0.0000001
-            val keep = num.keepDecimal(5)
-            var numStr = num.toString()
-            val numStrS = numStr.split(".").toMutableList()
-            numStrS[1] = numStrS[1].up2Length(5, isInStart = false, isForced = true)
-            numStr = "${numStrS[0]}.${numStrS[1]}"
-            println("[${i}]${num},${keep},${numStr}")
-            assertEquals(keep, numStr.toDouble())
+    fun testLatitudeToDMS() {
+        val map = mapOf(
+            50.64363 to arrayOf(50,38,37.068f),
+            64.20716 to arrayOf(64,12,25.776f),
+            59.36704 to arrayOf(59,22,1.344f),
+            4.69648 to arrayOf(4,41,47.328f),
+            59.31789 to arrayOf(59,19,4.404f),
+            88.83955 to arrayOf(88,50,22.38f),
+            36.59161 to arrayOf(36,35,29.796f),
+            45.76718 to arrayOf(45,46,1.848f),
+            27.11171 to arrayOf(27,6,42.156f),
+            44.47969 to arrayOf(44,28,46.884f),
+            56.57414 to arrayOf(56,34,26.904f),
+            176.51667 to arrayOf(176,31,0.012f),
+            169.98483 to arrayOf(169,59,5.388f),
+            38.31324 to arrayOf(38,18,47.664f),
+            137.30027 to arrayOf(137,18,0.972f),
+            4.83266 to arrayOf(4,49,57.576f),
+            68.40851 to arrayOf(68,24,30.636f),
+            101.10532 to arrayOf(101,6,19.152f),
+            95.87154 to arrayOf(95,52,17.544f),
+            72.71799 to arrayOf(72,43,4.764f),
+            65.19124 to arrayOf(65,11,28.464f),
+            28.934 to arrayOf(28,56,2.4f),
+        )
+        map.forEach { item ->
+            val dms = item.key.toDMS(item.key > 90)
+            assertEquals(dms.degrees, item.value[0])
+            assertEquals(dms.minutes, item.value[1])
+            assertEquals(dms.seconds, item.value[2])
+            val latlng = dms.toLatLng()
+            assertTrue(item.key in (latlng - 0.00001) .. (latlng + 0.00001))
         }
     }
 }
