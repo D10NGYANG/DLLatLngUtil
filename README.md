@@ -8,6 +8,8 @@ allprojects {
   repositories {
     ...
     maven { url 'https://jitpack.io' }
+    // 我的github镜像仓库
+    maven { url 'https://raw.githubusercontent.com/D10NGYANG/maven-repo/main/repository'}
   }
 }
 ```
@@ -15,7 +17,7 @@ allprojects {
 ```gradle
 dependencies {
     // 经纬度工具
-    implementation 'com.github.D10NGYANG:DLLatLngUtil:1.3'
+    implementation 'com.github.D10NGYANG:DLLatLngUtil:1.5.1'
 }
 ```
 3 混淆

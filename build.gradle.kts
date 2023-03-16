@@ -1,10 +1,14 @@
+val bds100MavenUsername: String by project
+val bds100MavenPassword: String by project
+
 plugins {
-    kotlin("multiplatform") version "1.7.0"
+    id("dev.petuska.npm.publish") version "3.2.1"
+    kotlin("multiplatform") version "1.8.10"
     id("maven-publish")
 }
 
 group = "com.github.D10NGYANG"
-version = "1.3"
+version = "1.5.1"
 
 repositories {
     mavenCentral()
@@ -17,8 +21,10 @@ kotlin {
             kotlinOptions.jvmTarget = "1.8"
         }
     }
-    js {
-        browser {}
+    js(IR) {
+        moduleName = "dl-latlng-util"
+        browser()
+        binaries.library()
         binaries.executable()
     }
     ios {
@@ -36,6 +42,35 @@ kotlin {
             dependencies {
                 implementation(kotlin("test"))
             }
+        }
+    }
+}
+
+publishing {
+    repositories {
+        maven {
+            url = uri("/Users/d10ng/project/kotlin/maven-repo/repository")
+        }
+        maven {
+            credentials {
+                username = bds100MavenUsername
+                password = bds100MavenPassword
+            }
+            setUrl("https://nexus.bds100.com/repository/maven-releases/")
+        }
+    }
+}
+
+npmPublish {
+    registries {
+        register("npm-hosted") {
+            uri.set("https://nexus.bds100.com/repository/npm-hosted")
+        }
+    }
+    packages {
+        named("js") {
+            scope.set("hailiao")
+            packageName.set("dl-latlng-util")
         }
     }
 }
