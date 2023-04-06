@@ -65,7 +65,7 @@ fun getAngleOn2Points(point1: DLatLng, point2: DLatLng): Double {
     val lat2 = toRadians(point2.latitude)
     val lng1 = toRadians(point1.longitude)
     val lng2 = toRadians(point2.longitude)
-    val x = cos(lat1) * sin(lat2) - sin(lat1) * cos(lat2)* cos(lng2 - lng1)
+    val x = cos(lat1) * sin(lat2) - sin(lat1) * cos(lat2) * cos(lng2 - lng1)
     val y = sin(lng2 - lng1) * cos(lat2)
     val bearing = atan2(y, x)
     return (bearing * 180 / PI + 360) % 360
@@ -81,8 +81,8 @@ fun getAngleOn2Points(point1: DLatLng, point2: DLatLng): Double {
  */
 fun getPointOn2Points(point1: DLatLng, point2: DLatLng, present: Float): DLatLng {
     return DLatLng(
-        point2.latitude + (point1.latitude - point2.latitude) * present,
-        point2.longitude + (point1.longitude - point2.longitude) * present
+        point1.latitude + (point2.latitude - point1.latitude) * present,
+        point1.longitude + (point2.longitude - point1.longitude) * present
     )
 }
 
@@ -107,20 +107,31 @@ fun getTotalDistance(points: Array<DLatLng>): Double {
  */
 fun getPointsOnDistance(points: Array<DLatLng>, distance: Double): Array<DLatLng> {
     val result = mutableListOf<DLatLng>()
-    for (i in points.indices) {
-        // 第一个和最后一个点直接添加
-        if (i == 0 || i == points.size - 1) {
-            result.add(points[i])
-            continue
-        }
-        while (true) {
-            val d = getDistanceOn2Points(result[result.size -1], points[i])
-            if (d >= distance) {
-                val present = distance / d
-                result.add(getPointOn2Points(result[result.size -1], points[i], present.toFloat()))
-            } else {
-                break
+    var totalDistance = 0.0
+    points.forEachIndexed { index, point ->
+        if (index == 0) {
+            totalDistance = 0.0
+        } else {
+            val lastPoint = points[index - 1]
+            val lastDistance = totalDistance
+            val curDistance = getDistanceOn2Points(lastPoint, point)
+            val newDistance = lastDistance + curDistance
+            val totalCount = floor(newDistance / distance).toInt()
+            if (totalCount > result.size) {
+                val count = totalCount - result.size
+                var hasHandleDistance = lastDistance
+                var noHandleDistance = curDistance
+                var p0 = lastPoint
+                for (i in 0 until count) {
+                    val lessDistance = distance - (hasHandleDistance % distance)
+                    val present = lessDistance / noHandleDistance
+                    p0= getPointOn2Points(p0, point, present.toFloat())
+                    result.add(p0)
+                    hasHandleDistance += lessDistance
+                    noHandleDistance -= lessDistance
+                }
             }
+            totalDistance = newDistance
         }
     }
     return result.toTypedArray()
