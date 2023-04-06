@@ -2,6 +2,7 @@ package com.d10ng.latlnglib
 
 import com.d10ng.latlnglib.bean.DLatLng
 import com.d10ng.latlnglib.constant.CoordinateSystemType
+import kotlin.math.abs
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -79,5 +80,12 @@ class Test {
             val latlng = dms.toLatLng()
             assertTrue(item.key in (latlng - 0.00001) .. (latlng + 0.00001))
         }
+    }
+
+    @Test
+    fun testPointDistance() {
+        assertTrue(abs(getDistanceOn2Points(DLatLng(32.13988, 120.1078), DLatLng(32.02179, 118.7967)) - 124220) < 1)
+        assertTrue(abs(getDistanceOn2Points(DLatLng(29.50166, 106.5113), DLatLng(29.5064, 106.5135)) - 568) < 1)
+        assertTrue(abs(getDistanceOn2Points(DLatLng(29.51075, 106.5136), DLatLng(29.51054, 106.5154)) - 175) < 1)
     }
 }
