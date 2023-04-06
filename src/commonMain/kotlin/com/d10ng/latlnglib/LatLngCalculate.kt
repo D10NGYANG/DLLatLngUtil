@@ -125,7 +125,7 @@ fun getPointsOnDistance(points: Array<DLatLng>, distance: Double): Array<DLatLng
                 for (i in 0 until count) {
                     val lessDistance = distance - (hasHandleDistance % distance)
                     val present = lessDistance / noHandleDistance
-                    p0= getPointOn2Points(p0, point, present.toFloat())
+                    p0 = getPointOn2Points(p0, point, present.toFloat())
                     result.add(p0)
                     hasHandleDistance += lessDistance
                     noHandleDistance -= lessDistance
@@ -134,6 +134,8 @@ fun getPointsOnDistance(points: Array<DLatLng>, distance: Double): Array<DLatLng
             totalDistance = newDistance
         }
     }
+    result.add(0, points[0])
+    result.add(points[points.size - 1])
     return result.toTypedArray()
 }
 
