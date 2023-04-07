@@ -8,7 +8,7 @@ plugins {
 }
 
 group = "com.github.D10NGYANG"
-version = "1.5.5"
+version = "1.5.6"
 
 repositories {
     mavenCentral()
@@ -22,8 +22,8 @@ kotlin {
         }
     }
     js(IR) {
-        moduleName = "dl-latlng-util"
-        browser()
+        moduleName = "DLLatLngUtil"
+        nodejs()
         binaries.library()
         binaries.executable()
     }
