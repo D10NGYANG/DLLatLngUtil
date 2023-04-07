@@ -8,7 +8,7 @@ plugins {
 }
 
 group = "com.github.D10NGYANG"
-version = "1.5.6"
+version = "1.5.7"
 
 repositories {
     mavenCentral()
@@ -22,7 +22,6 @@ kotlin {
         }
     }
     js(IR) {
-        moduleName = "DLLatLngUtil"
         nodejs()
         binaries.library()
         binaries.executable()
@@ -70,7 +69,6 @@ npmPublish {
     packages {
         named("js") {
             scope.set("hailiao")
-            packageName.set("dl-latlng-util")
         }
     }
 }
