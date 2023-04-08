@@ -81,10 +81,20 @@ fun getAngleOn2Points(point1: DLatLng, point2: DLatLng): Double {
  * @return DLatLng
  */
 fun getPointOn2Points(point1: DLatLng, point2: DLatLng, present: Float): DLatLng {
-    return DLatLng(
-        point1.latitude + (point2.latitude - point1.latitude) * present,
-        point1.longitude + (point2.longitude - point1.longitude) * present
-    )
+    val earthR = 6371.0 // 地球的半径，单位为公里
+    val lat1Rad = toRadians(point1.latitude)
+    val lon1Rad = toRadians(point1.longitude)
+    val lat2Rad = toRadians(point2.latitude)
+    val lon2Rad = toRadians(point2.longitude)
+    val distance = acos(sin(lat1Rad) * sin(lat2Rad) + cos(lat1Rad) * cos(lat2Rad) * cos(lon2Rad - lon1Rad)) * earthR
+    val a = sin((1 - present) * distance / earthR) / sin(distance / earthR)
+    val b = sin(present * distance / earthR) / sin(distance / earthR)
+    val x = a * cos(lat1Rad) * cos(lon1Rad) + b * cos(lat2Rad) * cos(lon2Rad)
+    val y = a * cos(lat1Rad) * sin(lon1Rad) + b * cos(lat2Rad) * sin(lon2Rad)
+    val z = a * sin(lat1Rad) + b * sin(lat2Rad)
+    val lat3Rad = atan2(z, sqrt(x.pow(2) + y.pow(2)))
+    val lon3Rad = atan2(y, x)
+    return DLatLng(toDegrees(lat3Rad), toDegrees(lon3Rad))
 }
 
 /**
