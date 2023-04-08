@@ -62,14 +62,10 @@ fun isPointInCircle(point: DLatLng, center: DLatLng, radius: Double, offset: Flo
  * @return Double
  */
 fun getAngleOn2Points(point1: DLatLng, point2: DLatLng): Double {
-    val lat1 = toRadians(point1.latitude)
-    val lat2 = toRadians(point2.latitude)
-    val lng1 = toRadians(point1.longitude)
-    val lng2 = toRadians(point2.longitude)
-    val x = cos(lat1) * sin(lat2) - sin(lat1) * cos(lat2) * cos(lng2 - lng1)
-    val y = sin(lng2 - lng1) * cos(lat2)
-    val bearing = atan2(y, x)
-    return (bearing * 180 / PI + 360) % 360
+    val x = cos(point1.latitude) * sin(point2.latitude) - sin(point1.latitude) * cos(point2.latitude) * cos(point2.longitude - point1.longitude)
+    val y = sin(point2.longitude - point1.longitude) * cos(point2.latitude)
+    val bearing = toDegrees(atan2(y, x))
+    return if (bearing < 0) bearing + 360 else bearing
 }
 
 
