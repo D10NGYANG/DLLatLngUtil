@@ -3,10 +3,76 @@
 package com.d10ng.latlnglib
 
 import com.d10ng.latlnglib.bean.DLatLng
+import com.d10ng.latlnglib.bean.DistanceAndBearing
 import kotlin.js.ExperimentalJsExport
 import kotlin.js.JsExport
 import kotlin.math.*
 import kotlin.random.Random
+
+// 地球长半径，单位为米
+private const val EARTH_RADIUS_LONG = 6378137.0
+// 地球短半径，单位为米
+private const val EARTH_RADIUS_SHORT = 6356752.314245
+// 地球扁率，1/298.257223563
+private const val EARTH_FLATTENING = 0.003352810664747481
+
+/**
+ * 获取两点间的距离和方位角
+ * - 使用Vincenty算法，参考：http://www.movable-type.co.uk/scripts/latlong-vincenty.html
+ * @param point1 DLatLng
+ * @param point2 DLatLng
+ * @return DistanceAndBearing
+ */
+fun getDistanceAndBearing(point1: DLatLng, point2: DLatLng): DistanceAndBearing {
+    val radLon1 = toRadians(point1.longitude)
+    val radLat1 = toRadians(point1.latitude)
+    val radLon2 = toRadians(point2.longitude)
+    val radLat2 = toRadians(point2.latitude)
+    val L = radLon2 - radLon1
+    val tanU1 = (1 - EARTH_FLATTENING) * tan(radLat1)
+    val cosU1 = 1 / sqrt((1 + tanU1 * tanU1))
+    val sinU1 = tanU1 * cosU1
+    val tanU2 = (1 - EARTH_FLATTENING) * tan(radLat2)
+    val cosU2 = 1 / sqrt((1 + tanU2 * tanU2))
+    val sinU2 = tanU2 * cosU2
+    val antipodal = abs(L) > PI / 2 || abs(radLat2 - radLat1) > PI / 2
+    var f9 = L
+    var sinF9: Double
+    var cosF9: Double
+    var fq = if (antipodal) PI else 0.0
+    var sinFq = 0.0
+    var cosFq = if (antipodal) -1.0 else 1.0
+    var sinSFqFa: Double
+    var cos2Fqm = 1.0
+    var cosSFqFa = 1.0
+    var iterations = 0
+    var f91: Double
+    do {
+        sinF9 = sin(f9)
+        cosF9 = cos(f9)
+        sinSFqFa = (cosU2 * sinF9) * (cosU2 * sinF9) + (cosU1 * sinU2 - sinU1 * cosU2 * cosF9) * (cosU1 * sinU2 - sinU1 * cosU2 * cosF9)
+        if (abs(sinSFqFa) < 1e-24) break
+        sinFq = sqrt(sinSFqFa)
+        cosFq = sinU1 * sinU2 + cosU1 * cosU2 * cosF9
+        fq = atan2(sinFq, cosFq)
+        val sinFa = cosU1 * cosU2 * sinF9 / sinFq
+        cosSFqFa = 1 - sinFa * sinFa
+        cos2Fqm = if (cosSFqFa != 0.0) cosFq - 2 * sinU1 * sinU2 / cosSFqFa else 0.0
+        val C = (EARTH_FLATTENING / 16) * cosSFqFa * (4 + EARTH_FLATTENING * (4 - 3 * cosSFqFa))
+        f91 = f9
+        f9 = L + (1 - C) * EARTH_FLATTENING * sinFa * (fq + C * sinFq * (cos2Fqm + C * cosFq * (-1 + 2 * cos2Fqm * cos2Fqm)))
+        val iterationCheck = if (antipodal) abs(f9) - PI else abs(f9)
+        if (iterationCheck > PI) throw RuntimeException("λ > π")
+    } while (abs(f9 - f91) > 1e-12 && ++iterations < 100)
+    val uSq = cosSFqFa * (EARTH_RADIUS_LONG * EARTH_RADIUS_LONG - EARTH_RADIUS_SHORT * EARTH_RADIUS_SHORT) / (EARTH_RADIUS_SHORT * EARTH_RADIUS_SHORT)
+    val A = 1 + uSq / 16384 * (4096 + uSq * (-768 + uSq * (320 - 175 * uSq)))
+    val B = uSq / 1024 * (256 + uSq * (-128 + uSq * (74 - 47 * uSq)))
+    val deltaFq = B * sinFq * (cos2Fqm + B / 4 * (cosFq * (-1 + 2 * cos2Fqm * cos2Fqm) - B / 6 * cos2Fqm * (-3 + 4 * sinFq * sinFq) * (-3 + 4 * cos2Fqm * cos2Fqm)))
+    val s = EARTH_RADIUS_SHORT * A * (fq - deltaFq)
+    val alpha1 = if (abs(sinSFqFa) < 1e-12) 0.0 else atan2(cosU2 * sinF9, cosU1 * sinU2 - sinU1 * cosU2 * cosF9)
+    val alpha2 = if (abs(sinSFqFa) < 1e-12) PI else atan2(cosU1 * sinF9, -sinU1 * cosU2 + cosU1 * sinU2 * cosF9)
+    return DistanceAndBearing(s, toDegrees(alpha1), toDegrees(alpha2))
+}
 
 /**
  * 计算两点之间的距离，单位为米
@@ -15,14 +81,7 @@ import kotlin.random.Random
  * @return Double
  */
 fun getDistanceOn2Points(point1: DLatLng, point2: DLatLng): Double {
-    val earthR = 6371393 // 地球半径，单位为米
-    val lat1Rad = toRadians(point1.latitude)
-    val lat2Rad = toRadians(point2.latitude)
-    val a =  lat1Rad - lat2Rad
-    val b = toRadians(point1.longitude) - toRadians(point2.longitude)
-    val sa2 = sin(a / 2)
-    val sb2 = sin(b / 2)
-    return 2 * earthR * asin(sqrt(sa2 * sa2 + cos(lat1Rad) * cos(lat2Rad) * sb2 * sb2))
+    return getDistanceAndBearing(point1, point2).distance
 }
 
 /**
@@ -62,10 +121,7 @@ fun isPointInCircle(point: DLatLng, center: DLatLng, radius: Double, offset: Flo
  * @return Double
  */
 fun getAngleOn2Points(point1: DLatLng, point2: DLatLng): Double {
-    val x = cos(point1.latitude) * sin(point2.latitude) - sin(point1.latitude) * cos(point2.latitude) * cos(point2.longitude - point1.longitude)
-    val y = sin(point2.longitude - point1.longitude) * cos(point2.latitude)
-    val bearing = toDegrees(atan2(y, x))
-    return if (bearing < 0) bearing + 360 else bearing
+    return getDistanceAndBearing(point1, point2).finalBearing
 }
 
 
@@ -169,18 +225,50 @@ fun compressTrack(points: Array<DLatLng>): Array<DLatLng> {
 
 /**
  * 根据距离与角度从一个坐标点获取另一个坐标点
+ * - 使用Vincenty direct算法，参考：http://www.movable-type.co.uk/scripts/latlong-vincenty.html
  * @param point DLatLng 基准点
  * @param distance Double 距离，单位为米
  * @param angle Double 角度，单位为弧度
  * @return DLatLng 新的坐标点
  */
 fun getPointByBasePoint(point: DLatLng, distance: Double, angle: Double): DLatLng {
-    val radian = toRadians(angle)
-    val earthR = 6371393
-    val offset = 1.1295872
-    val newLat = point.latitude + distance * offset * cos(radian) / (earthR * 2 * PI / 360)
-    val newLng = point.longitude + distance * offset * sin(radian) / (earthR * cos(point.latitude) * 2 * PI / 360)
-    return DLatLng(newLat, newLng)
+    if (distance == 0.0) return point.copy()
+    val radLat = toRadians(point.latitude)
+    val radLng = toRadians(point.longitude)
+    val radAngle = toRadians(angle)
+    val sinRadAngle = sin(radAngle)
+    val cosRadAngle = cos(radAngle)
+    val tanU1 = (1 - EARTH_FLATTENING) * tan(radLat)
+    val cosU1 = 1 / sqrt((1 + tanU1 * tanU1))
+    val sinU1 = tanU1 * cosU1
+    val sigma1 = atan2(tanU1, cosRadAngle)
+    val sinAlpha = cosU1 * sinRadAngle
+    val cosSqAlpha = 1 - sinAlpha * sinAlpha
+    val uSq = cosSqAlpha * (EARTH_RADIUS_LONG * EARTH_RADIUS_LONG - EARTH_RADIUS_SHORT * EARTH_RADIUS_SHORT) / (EARTH_RADIUS_SHORT * EARTH_RADIUS_SHORT)
+    val A = 1 + uSq / 16384 * (4096 + uSq * (-768 + uSq * (320 - 175 * uSq)))
+    val B = uSq / 1024 * (256 + uSq * (-128 + uSq * (74 - 47 * uSq)))
+    var sigma = distance / (EARTH_RADIUS_SHORT * A)
+    var sinSigma: Double
+    var cosSigma: Double
+    var cos2SigmaM: Double
+    var sigmaP: Double
+    var iterations = 0.0
+    do {
+        cos2SigmaM = cos(2 * sigma1 + sigma)
+        sinSigma = sin(sigma)
+        cosSigma = cos(sigma)
+        val deltaSigma = B * sinSigma * (cos2SigmaM + B / 4 * (cosSigma * (-1 + 2 * cos2SigmaM * cos2SigmaM) - B / 6 * cos2SigmaM * (-3 + 4 * sinSigma * sinSigma) * (-3 + 4 * cos2SigmaM * cos2SigmaM)))
+        sigmaP = sigma
+        sigma = distance / (EARTH_RADIUS_SHORT * A) + deltaSigma
+    } while (abs(sigma - sigmaP) > 1e-12 && ++iterations < 100)
+    if (iterations >= 100) throw RuntimeException("Vincenty formula failed to converge")
+    val x = sinU1 * sinSigma - cosU1 * cosSigma * cosRadAngle
+    val lat2 = atan2(sinU1 * cosSigma + cosU1 * sinSigma * cosRadAngle, (1 - EARTH_FLATTENING) * sqrt(sinAlpha * sinAlpha + x * x))
+    val lambda = atan2(sinSigma * sinRadAngle, cosU1 * cosSigma - sinU1 * sinSigma * cosRadAngle)
+    val C = EARTH_FLATTENING / 16 * cosSqAlpha * (4 + EARTH_FLATTENING * (4 - 3 * cosSqAlpha))
+    val L = lambda - (1 - C) * EARTH_FLATTENING * sinAlpha * (sigma + C * sinSigma * (cos2SigmaM + C * cosSigma * (-1 + 2 * cos2SigmaM * cos2SigmaM)))
+    val lng2 = radLng + L
+    return DLatLng(toDegrees(lat2), toDegrees(lng2))
 }
 
 /**

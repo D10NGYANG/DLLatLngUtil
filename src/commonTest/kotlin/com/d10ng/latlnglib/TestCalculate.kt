@@ -220,8 +220,8 @@ class TestCalculate {
 
     @Test
     fun testPointByPresent() {
-        val start = array[0]
-        val end = array[6]
+        val start = array[11]
+        val end = array[12]
         printlnPoint(start)
         val angle = getAngleOn2Points(start, end)
         val distance = getDistanceOn2Points(start, end)
@@ -238,6 +238,11 @@ class TestCalculate {
             //assertTrue(abs(distance1 - distance3) < 0.01)
         }
         printlnPoint(end)
+    }
+
+    @Test
+    fun test() {
+        println(getDistanceAndBearing(array[0], array[1]))
     }
 
     fun printlnPoint(point: DLatLng) {
