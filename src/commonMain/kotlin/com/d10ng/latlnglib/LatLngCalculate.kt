@@ -124,7 +124,6 @@ fun getAngleOn2Points(point1: DLatLng, point2: DLatLng): Double {
     return getDistanceAndBearing(point1, point2).finalBearing
 }
 
-
 /**
  * 从两个坐标间根据百分比获取中间坐标
  * @param point1 DLatLng 起点
@@ -133,10 +132,9 @@ fun getAngleOn2Points(point1: DLatLng, point2: DLatLng): Double {
  * @return DLatLng
  */
 fun getPointOn2Points(point1: DLatLng, point2: DLatLng, present: Float): DLatLng {
-    val distance = getDistanceOn2Points(point1, point2)
-    val angle = getAngleOn2Points(point1, point2)
-    val newDistance = distance * present
-    return getPointByBasePoint(point1, newDistance, angle)
+    val distanceAndBearing = getDistanceAndBearing(point1, point2)
+    val newDistance = distanceAndBearing.distance * present
+    return getPointByBasePoint(point1, newDistance, distanceAndBearing.finalBearing)
 }
 
 /**
