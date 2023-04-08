@@ -57,8 +57,8 @@ fun isPointInCircle(point: DLatLng, center: DLatLng, radius: Double, offset: Flo
 
 /**
  * 计算两个坐标点之间的夹角，单位度
- * @param point1 DLatLng
- * @param point2 DLatLng
+ * @param point1 DLatLng 起点
+ * @param point2 DLatLng 终点
  * @return Double
  */
 fun getAngleOn2Points(point1: DLatLng, point2: DLatLng): Double {
