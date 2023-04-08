@@ -214,4 +214,24 @@ class TestCalculate {
         val list = getPointsOnDistance(array, 10.0)
         println(list.size)
     }
+
+
+    @Test
+    fun testPointByPresent() {
+        println(array[0])
+        println(array[1])
+        val point = getPointOn2Points(array[0], array[1], 0.5f)
+        println(point)
+        val angle = getAngleOn2Points(array[0], array[1])
+        val angle1 = getAngleOn2Points(array[0], point)
+        println(angle)
+        println(angle1)
+        val distance = getDistanceOn2Points(array[0], array[1])
+        val distance1 = getDistanceOn2Points(array[0], point)
+        val distance2 = getDistanceOn2Points(point, array[1])
+        println(distance)
+        println(distance1)
+        println(distance2)
+        println(distance1 + distance2)
+    }
 }

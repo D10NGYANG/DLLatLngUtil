@@ -81,20 +81,10 @@ fun getAngleOn2Points(point1: DLatLng, point2: DLatLng): Double {
  * @return DLatLng
  */
 fun getPointOn2Points(point1: DLatLng, point2: DLatLng, present: Float): DLatLng {
-    val earthR = 6371.0 // 地球的半径，单位为公里
-    val lat1Rad = toRadians(point1.latitude)
-    val lon1Rad = toRadians(point1.longitude)
-    val lat2Rad = toRadians(point2.latitude)
-    val lon2Rad = toRadians(point2.longitude)
-    val distance = acos(sin(lat1Rad) * sin(lat2Rad) + cos(lat1Rad) * cos(lat2Rad) * cos(lon2Rad - lon1Rad)) * earthR
-    val a = sin((1 - present) * distance / earthR) / sin(distance / earthR)
-    val b = sin(present * distance / earthR) / sin(distance / earthR)
-    val x = a * cos(lat1Rad) * cos(lon1Rad) + b * cos(lat2Rad) * cos(lon2Rad)
-    val y = a * cos(lat1Rad) * sin(lon1Rad) + b * cos(lat2Rad) * sin(lon2Rad)
-    val z = a * sin(lat1Rad) + b * sin(lat2Rad)
-    val lat3Rad = atan2(z, sqrt(x.pow(2) + y.pow(2)))
-    val lon3Rad = atan2(y, x)
-    return DLatLng(toDegrees(lat3Rad), toDegrees(lon3Rad))
+    val distance = getDistanceOn2Points(point1, point2)
+    val angle = getAngleOn2Points(point1, point2)
+    val newDistance = distance * present
+    return getPointByBasePoint(point1, newDistance, angle)
 }
 
 /**
@@ -182,6 +172,21 @@ fun compressTrack(points: Array<DLatLng>): Array<DLatLng> {
 }
 
 /**
+ * 根据距离与角度从一个坐标点获取另一个坐标点
+ * @param point DLatLng 基准点
+ * @param distance Double 距离，单位为米
+ * @param angle Double 角度，单位为弧度
+ * @return DLatLng 新的坐标点
+ */
+fun getPointByBasePoint(point: DLatLng, distance: Double, angle: Double): DLatLng {
+    val radian = toRadians(angle)
+    val earthR = 6371e3
+    val newLat = point.latitude + distance * cos(radian) / (earthR * 2 * PI / 360)
+    val newLng = point.longitude + distance * sin(radian) / (earthR * cos(newLat) * 2 * PI / 360)
+    return DLatLng(newLat, newLng)
+}
+
+/**
  * 基于一个中心点的半径范围获取一个随机坐标点
  * @param point DLatLng 中心点
  * @param radius Double 半径
@@ -192,13 +197,7 @@ fun getRandomPoint(point: DLatLng, radius: Double): DLatLng {
     val randomAngle = Random.nextDouble() * PI * 2
     // 随机距离
     val randomDistance = Random.nextDouble() * radius
-    val dx = cos(randomAngle) * randomDistance
-    val dy = sin(randomAngle) * randomDistance
-    // 纬度每度大约是111111米
-    val newLat = point.latitude + dy / 111111
-    // 经度每度的长度随着纬度的变化而变化
-    val newLng = point.longitude + dx / (111111 * cos(point.latitude))
-    return DLatLng(newLat, newLng)
+    return getPointByBasePoint(point, randomDistance, randomAngle)
 }
 
 /**
