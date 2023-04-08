@@ -270,11 +270,13 @@ fun getProjectionLineOnLineWithPoint(point: DLatLng, targetLine: Array<DLatLng>)
  * 获取线路在另一条线路上的投影线，从起点开始算
  * - 目前适用于马拉松比赛中的收尾车的轨迹拟合到活动线路来
  * @param line Array<DLatLng> 线路
- * @param targetLine Array<DLatLng> 目标线路，最好是换算成相同间隔的轨迹（如间隔100米一个点），可以使用函数getPointsOnDistance进行换算
+ * @param targetLine Array<DLatLng> 目标线路，起码有两个点，最好是换算成相同间隔的轨迹（如间隔100米一个点），可以使用函数getPointsOnDistance进行换算
  * @param offset Float 误差范围，单位为米，计算的最靠近的线段列表中第一个线段的距离和最后一个线段的距离之差不能超过这个值
  * @return Array<DLatLng> 投影线
  */
 fun getProjectionLineOnLineWithLine(line: Array<DLatLng>, targetLine: Array<DLatLng>, offset: Float = 10f): Array<DLatLng> {
+    // 如果一个点都没有的线路，直接返回目标线路的第一个点
+    if (line.isEmpty()) return arrayOf(targetLine[0])
     // 先对轨迹进行压缩，清除一些不必要的点
     val compressLine = compressTrack(line)
     // 获取最新一个位置点在轨迹上最靠近的几个线段
