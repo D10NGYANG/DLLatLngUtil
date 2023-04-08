@@ -57,17 +57,17 @@ fun isPointInCircle(point: DLatLng, center: DLatLng, radius: Double, offset: Flo
 
 /**
  * 计算两个坐标点之间的夹角，单位度
- * @param point1 DLatLng
- * @param point2 DLatLng
+ * @param point0 DLatLng 起点
+ * @param point1 DLatLng 终点
  * @return Double
  */
-fun getAngleOn2Points(point1: DLatLng, point2: DLatLng): Double {
+fun getAngleOn2Points(point0: DLatLng, point1: DLatLng): Double {
     val lat1 = toRadians(point1.latitude)
-    val lat2 = toRadians(point2.latitude)
+    val lat0 = toRadians(point0.latitude)
     val lng1 = toRadians(point1.longitude)
-    val lng2 = toRadians(point2.longitude)
-    val x = cos(lat1) * sin(lat2) - sin(lat1) * cos(lat2) * cos(lng2 - lng1)
-    val y = sin(lng2 - lng1) * cos(lat2)
+    val lng0 = toRadians(point0.longitude)
+    val x = cos(lat1) * sin(lat0) - sin(lat1) * cos(lat0) * cos(lng0 - lng1)
+    val y = sin(lng0 - lng1) * cos(lat0)
     val bearing = atan2(y, x)
     return (bearing * 180 / PI + 360) % 360
 }
