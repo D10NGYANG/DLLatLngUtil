@@ -15,14 +15,14 @@ import kotlin.random.Random
  * @return Double
  */
 fun getDistanceOn2Points(point1: DLatLng, point2: DLatLng): Double {
-    val earthR = 6371e3 // 地球半径，单位为米
+    val earthR = 6371393 // 地球半径，单位为米
     val lat1Rad = toRadians(point1.latitude)
     val lat2Rad = toRadians(point2.latitude)
-    val deltaLat = toRadians(point2.latitude - point1.latitude)
-    val deltaLon = toRadians(point2.longitude - point1.longitude)
-    val a = sin(deltaLat / 2) * sin(deltaLat / 2) + cos(lat1Rad) * cos(lat2Rad) * sin(deltaLon / 2) * sin(deltaLon / 2)
-    val c = 2 * atan2(sqrt(a), sqrt(1 - a))
-    return earthR * c
+    val a =  lat1Rad - lat2Rad
+    val b = toRadians(point1.longitude) - toRadians(point2.longitude)
+    val sa2 = sin(a / 2)
+    val sb2 = sin(b / 2)
+    return 2 * earthR * asin(sqrt(sa2 * sa2 + cos(lat1Rad) * cos(lat2Rad) * sb2 * sb2))
 }
 
 /**
@@ -176,9 +176,10 @@ fun compressTrack(points: Array<DLatLng>): Array<DLatLng> {
  */
 fun getPointByBasePoint(point: DLatLng, distance: Double, angle: Double): DLatLng {
     val radian = toRadians(angle)
-    val earthR = 6371e3
-    val newLat = point.latitude + distance * cos(radian) / (earthR * 2 * PI / 360)
-    val newLng = point.longitude + distance * sin(radian) / (earthR * cos(newLat) * 2 * PI / 360)
+    val earthR = 6371393
+    val offset = 1.1295872
+    val newLat = point.latitude + distance * offset * cos(radian) / (earthR * 2 * PI / 360)
+    val newLng = point.longitude + distance * offset * sin(radian) / (earthR * cos(point.latitude) * 2 * PI / 360)
     return DLatLng(newLat, newLng)
 }
 

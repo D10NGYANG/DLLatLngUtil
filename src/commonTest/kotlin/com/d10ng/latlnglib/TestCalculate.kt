@@ -1,7 +1,9 @@
 package com.d10ng.latlnglib
 
 import com.d10ng.latlnglib.bean.DLatLng
+import kotlin.math.abs
 import kotlin.test.Test
+import kotlin.test.assertTrue
 
 class TestCalculate {
 
@@ -218,20 +220,27 @@ class TestCalculate {
 
     @Test
     fun testPointByPresent() {
-        println(array[0])
-        println(array[1])
-        val point = getPointOn2Points(array[0], array[1], 0.5f)
-        println(point)
-        val angle = getAngleOn2Points(array[0], array[1])
-        val angle1 = getAngleOn2Points(array[0], point)
-        println(angle)
-        println(angle1)
-        val distance = getDistanceOn2Points(array[0], array[1])
-        val distance1 = getDistanceOn2Points(array[0], point)
-        val distance2 = getDistanceOn2Points(point, array[1])
-        println(distance)
-        println(distance1)
-        println(distance2)
-        println(distance1 + distance2)
+        val start = array[0]
+        val end = array[6]
+        printlnPoint(start)
+        val angle = getAngleOn2Points(start, end)
+        val distance = getDistanceOn2Points(start, end)
+        for (i in 1 .. 9) {
+            ///println(i)
+            val distance3 = distance * i / 10.0f
+            val point = getPointByBasePoint(start, distance3, angle)
+            printlnPoint(point)
+            val angle1 = getAngleOn2Points(start, point)
+            println(angle - angle1)
+            //assertTrue(abs(angle - angle1) < 0.01)
+            val distance1 = getDistanceOn2Points(start, point)
+            println(distance1 - distance3)
+            //assertTrue(abs(distance1 - distance3) < 0.01)
+        }
+        printlnPoint(end)
+    }
+
+    fun printlnPoint(point: DLatLng) {
+        println("points.push(new T.LngLat(${point.longitude}, ${point.latitude}));")
     }
 }
