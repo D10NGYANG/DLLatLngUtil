@@ -78,10 +78,18 @@ fun getDistanceAndBearing(point1: DLatLng, point2: DLatLng): DistanceAndBearing 
  * 计算两点之间的距离，单位为米
  * @param point1 DLatLng
  * @param point2 DLatLng
- * @return Double
+ * @param highPrecision Boolean 是否使用高精度计算，高精度计算会使用Vincenty算法，低精度计算会使用Haversine算法
+ * @return Double 距离，单位为米
  */
-fun getDistanceOn2Points(point1: DLatLng, point2: DLatLng): Double {
-    return getDistanceAndBearing(point1, point2).distance
+fun getDistanceOn2Points(point1: DLatLng, point2: DLatLng, highPrecision: Boolean = false): Double {
+    if (highPrecision) return getDistanceAndBearing(point1, point2).distance
+    val lat1Rad = toRadians(point1.latitude)
+    val lat2Rad = toRadians(point2.latitude)
+    val a =  lat1Rad - lat2Rad
+    val b = toRadians(point1.longitude) - toRadians(point2.longitude)
+    val sa2 = sin(a / 2)
+    val sb2 = sin(b / 2)
+    return 2 * EARTH_RADIUS_LONG * asin(sqrt(sa2 * sa2 + cos(lat1Rad) * cos(lat2Rad) * sb2 * sb2))
 }
 
 /**
@@ -118,10 +126,15 @@ fun isPointInCircle(point: DLatLng, center: DLatLng, radius: Double, offset: Flo
  * 计算两个坐标点之间的夹角，单位度
  * @param point1 DLatLng 起点
  * @param point2 DLatLng 终点
- * @return Double
+ * @param highPrecision Boolean 是否使用高精度计算，高精度计算会使用Vincenty算法，低精度计算会使用Haversine算法
+ * @return Double 夹角，单位度
  */
-fun getAngleOn2Points(point1: DLatLng, point2: DLatLng): Double {
-    return getDistanceAndBearing(point1, point2).finalBearing
+fun getAngleOn2Points(point1: DLatLng, point2: DLatLng, highPrecision: Boolean = false): Double {
+    if (highPrecision) return getDistanceAndBearing(point1, point2).finalBearing
+    val x = cos(point1.latitude) * sin(point2.latitude) - sin(point1.latitude) * cos(point2.latitude) * cos(point2.longitude - point1.longitude)
+    val y = sin(point2.longitude - point1.longitude) * cos(point2.latitude)
+    val bearing = toDegrees(atan2(y, x))
+    return if (bearing < 0) bearing + 360 else bearing
 }
 
 /**
