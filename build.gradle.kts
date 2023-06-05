@@ -1,14 +1,16 @@
 val bds100MavenUsername: String by project
 val bds100MavenPassword: String by project
+val bds100NpmToken: String by project
+val npmJsToken: String by project
 
 plugins {
-    id("dev.petuska.npm.publish") version "3.2.1"
-    kotlin("multiplatform") version "1.8.10"
+    id("dev.petuska.npm.publish") version "3.3.1"
+    kotlin("multiplatform") version "1.8.20"
     id("maven-publish")
 }
 
 group = "com.github.D10NGYANG"
-version = "1.6.8"
+version = "1.7.0"
 
 repositories {
     mavenCentral()
@@ -17,14 +19,12 @@ repositories {
 
 kotlin {
     jvm {
-        compilations.all {
-            kotlinOptions.jvmTarget = "1.8"
-        }
+        jvmToolchain(8)
+        withJava()
     }
     js(IR) {
-        nodejs()
         binaries.library()
-        binaries.executable()
+        nodejs()
     }
     ios {
         binaries {
@@ -62,13 +62,17 @@ publishing {
 
 npmPublish {
     registries {
-        register("npm-hosted") {
-            uri.set("https://nexus.bds100.com/repository/npm-hosted")
+        register("npmjs") {
+            uri.set("https://registry.npmjs.org")
+        }
+        register("npm-releases") {
+            uri.set("https://nexus.bds100.com/repository/npm-releases/")
+            authToken.set(bds100NpmToken)
         }
     }
     packages {
         named("js") {
-            scope.set("hailiao")
+            packageName.set("dl-latlng-util")
         }
     }
 }
