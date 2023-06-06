@@ -18,7 +18,7 @@ allprojects {
 ```gradle
 dependencies {
     // 经纬度工具
-    implementation 'com.github.D10NGYANG:DLLatLngUtil:1.7.0'
+    implementation 'com.github.D10NGYANG:DLLatLngUtil:1.7.1'
 }
 ```
 3 混淆

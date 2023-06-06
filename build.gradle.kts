@@ -5,16 +5,15 @@ val npmJsToken: String by project
 
 plugins {
     id("dev.petuska.npm.publish") version "3.3.1"
-    kotlin("multiplatform") version "1.8.20"
+    kotlin("multiplatform") version "1.8.21"
     id("maven-publish")
 }
 
 group = "com.github.D10NGYANG"
-version = "1.7.0"
+version = "1.7.1"
 
 repositories {
     mavenCentral()
-    maven("https://jitpack.io" )
 }
 
 kotlin {
