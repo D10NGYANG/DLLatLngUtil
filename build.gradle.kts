@@ -1,6 +1,5 @@
 val bds100MavenUsername: String by project
 val bds100MavenPassword: String by project
-val bds100NpmToken: String by project
 val npmJsToken: String by project
 
 plugins {
