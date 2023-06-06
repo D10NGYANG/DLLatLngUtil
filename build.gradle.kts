@@ -10,7 +10,7 @@ plugins {
 }
 
 group = "com.github.D10NGYANG"
-version = "1.7.1"
+version = "1.7.2"
 
 repositories {
     mavenCentral()
@@ -22,8 +22,11 @@ kotlin {
         withJava()
     }
     js(IR) {
+        moduleName = "dl-latlng-util"
         binaries.library()
+        binaries.executable()
         nodejs()
+        generateTypeScriptDefinitions()
     }
     ios {
         binaries {
@@ -63,10 +66,7 @@ npmPublish {
     registries {
         register("npmjs") {
             uri.set("https://registry.npmjs.org")
-        }
-        register("npm-releases") {
-            uri.set("https://nexus.bds100.com/repository/npm-releases/")
-            authToken.set(bds100NpmToken)
+            authToken.set(npmJsToken)
         }
     }
     packages {
