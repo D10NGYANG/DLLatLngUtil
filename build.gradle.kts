@@ -4,12 +4,12 @@ val npmJsToken: String by project
 
 plugins {
     id("dev.petuska.npm.publish") version "3.3.1"
-    kotlin("multiplatform") version "1.8.21"
+    kotlin("multiplatform") version "1.8.22"
     id("maven-publish")
 }
 
 group = "com.github.D10NGYANG"
-version = "1.7.2"
+version = "1.7.3"
 
 repositories {
     mavenCentral()
