@@ -1,6 +1,9 @@
 # DLLatLngUtil
 经纬度数据处理工具[![](https://jitpack.io/v/D10NGYANG/DLLatLngUtil.svg)](https://jitpack.io/#D10NGYANG/DLLatLngUtil)
 
+# 停止维护⚠️
+> 本项目的功能已经合并到[DLCommonUtil](https://github.com/D10NGYANG/DLCommonUtil)中，请跳转查看；
+
 ## 使用
 1 Add it in your root build.gradle at the end of repositories:
 ```gradle
